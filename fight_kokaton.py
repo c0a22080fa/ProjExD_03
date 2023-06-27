@@ -148,8 +148,8 @@ class Score:
         スコアの初期化
         """
         self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
-        self.color = (0, 0, 255)
-        self.score = 0
+        self.color = (0, 0, 255) # 青色
+        self.score = 0 #最初のスコアを0に設定
         self.img = self.font.render("スコア:" + str(self.score), 0,  self.color)
         self.rct = self.img.get_rect()
         self.rct.center = (100, HEIGHT - 50)
@@ -201,12 +201,12 @@ def main():
                 time.sleep(1)
                 return
         for i, bomb in enumerate(bombs):
-            if beam is not None and bomb is not None:
+            if beam is not None:
                 if bomb.rct.colliderect(beam.rct):
-                    bomb = None
+                    bombs[i] = None
                     beam = None
                     bird.change_img(6, screen)
-                    score.score += 1
+                    score.score += 1 # スコアのカウントをアップ
                     pg.display.update()
 
 
