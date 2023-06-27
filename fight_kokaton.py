@@ -77,6 +77,30 @@ class Bird:
         screen.blit(self.img, self.rct)
 
 
+class Beam:
+    """
+    効果トンのビームに関するクラス
+    """
+    def __init__(self, bird: Bird):
+        """
+        引数に基づきビームsurfaceを生成する
+        引数 bird：ビームを放つこうかとん
+        """
+        self.img = pg.image.load(f"ex03/fig/beam.png")        
+        self.rct = self.img.get_rect()
+        self.rct.centerx = bird.rct.centerx
+        self.rct.centery = bird.rct.centery
+        self.vx, self.vy = +5, 0
+
+    def update(self, screen):
+        """
+        爆弾を速度ベクトルself.vx, self.vyに基づき移動させる
+        引数 screen：画面Surface
+        """
+        self.rct.move_ip(self.vx, self.vy)
+        screen.blit(self.img, self.rct)
+
+
 class Bomb:
     """
     爆弾に関するクラス
@@ -114,6 +138,7 @@ def main():
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     bomb = Bomb((255, 0, 0), 10)
+    beam = None
 
     clock = pg.time.Clock()
     tmr = 0
@@ -121,7 +146,10 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
-        
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+                beam = Beam(bird)  #　ビームインスタンスの生成
+
+
         screen.blit(bg_img, [0, 0])
         
         if bird.rct.colliderect(bomb.rct):
@@ -134,9 +162,13 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         bomb.update(screen)
+        if beam is not None:
+            beam.update(screen)
         pg.display.update()
         tmr += 1
         clock.tick(50)
+
+
 
 
 if __name__ == "__main__":
