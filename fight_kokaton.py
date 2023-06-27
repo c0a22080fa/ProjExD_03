@@ -138,20 +138,49 @@ class Bomb:
         if not tate:
             self.vy *= -1
         self.rct.move_ip(self.vx, self.vy)
+        screen.blit(self.img, self.rct) 
+class Score:
+    """
+    スコアに関するクラス
+    """
+    def __init__(self):
+        """
+        スコアの初期化
+        """
+        self.font = pg.font.SysFont("hgp創英角ﾎﾟｯﾌﾟ体", 30)
+        self.color = (0, 0, 255)
+        self.score = 0
+        self.img = self.font.render("スコア:" + str(self.score), 0,  self.color)
+        self.rct = self.img.get_rect()
+        self.rct.center = (100, HEIGHT - 50)
+
+    def update(self, screen: pg.Surface):
+        """
+        スコアの更新と画面への描画
+        引数 screen：画面Surface
+        """
+        self.img = self.font.render("スコア:" + str(self.score), 0, self.color)
         screen.blit(self.img, self.rct)
 
 
+
 def main():
+    def __init__(self, score):
+        self.score   = score
+
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load("ex03/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     #bomb = Bomb((255, 0, 0), 10)
     bombs = [Bomb((255, 0, 0), 10) for _ in range(NUM_OF_BOMBS)]
+    score = Score()
     beam = None
-
     clock = pg.time.Clock()
     tmr = 0
+    
+
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -160,8 +189,11 @@ def main():
                 beam = Beam(bird)  #　ビームインスタンスの生成
 
         screen.blit(bg_img, [0, 0])
+        
+       
 
         for bomb in bombs:
+            bomb.update(screen)
             if bird.rct.colliderect(bomb.rct):
                 # ゲームオーバー時に，こうかとん画像を切り替え，1秒間表示させる
                 bird.change_img(8, screen)
@@ -174,6 +206,7 @@ def main():
                     bomb = None
                     beam = None
                     bird.change_img(6, screen)
+                    score.score += 1
                     pg.display.update()
 
 
@@ -184,9 +217,11 @@ def main():
             bomb.update(screen)
         if beam is not None:
             beam.update(screen)
+        score.update(screen)
+        
         pg.display.update()
         tmr += 1
-        clock.tick(50)
+        clock.tick(40)
 
 
 
